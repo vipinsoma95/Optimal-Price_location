@@ -1,0 +1,115 @@
+---
+title: "Optimal Price based on location"
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+In this problem we are optimized the prices of a product based on the location of the store and also on the sheliving location
+```{r}
+library(ISLR)
+library(dplyr)
+library(gridExtra)
+library(ggplot2)
+
+SafeBabies <- Carseats %>% select("Sales", "Price", "ShelveLoc")
+```
+
+
+```{r}
+good <- filter(SafeBabies,ShelveLoc == 'Good')
+medium <- filter(SafeBabies,ShelveLoc == 'Medium')
+bad <- filter(SafeBabies,ShelveLoc == 'Bad')
+
+```
+
+
+```{r}
+
+good1<-good[order(good$Price),]
+ncol(good1)
+Model1 <- lm(good1$Sales ~ good1$Price, data = good1)
+summary(Model1)
+
+
+```
+```{r}
+optimal_price_good = (-0.065785 *55 - 17.968864)/(2 * -0.065785)
+optimal_price_good
+
+```
+
+
+
+```{r}
+optimised_results_good.function <- function() {
+   for(cost in 40:80) {
+     optimised_results_good<- (-0.065785 *cost - 17.968864)/(2 * -0.065785)
+      print(optimised_results_good)
+   }
+
+}	
+
+```
+
+```{r}
+#optimised_results_good.function()
+price<- c(40:79)
+optimized_good<-c(157.0727, 157.5727, 158.0727, 158.5727, 159.0727, 159.5727, 160.0727, 160.5727, 161.0727, 161.5727, 162.0727, 162.5727, 163.0727, 163.5727, 164.0727, 164.5727, 165.0727, 165.5727, 166.0727, 166.5727, 167.0727, 167.5727, 168.0727, 168.5727, 169.0727, 169.5727, 170.0727, 170.5727, 171.072, 171.5727, 172.0727, 172.5727, 173.0727, 173.5727, 174.0727, 174.5727, 175.0727, 175.5727, 176.0727, 176.5727)
+
+optimized_prie_good<-cbind.data.frame(optimized_good,price)
+names(optimized_prie_good)<-c('Optimized Price','Change in Cost')
+head(optimized_prie_good)
+```
+
+```{r}
+bad1<-bad[order(bad$Price),]
+ncol(bad1)
+Model2 <- lm(bad1$Sales ~ bad1$Price, data = bad1)
+summary(Model2)
+```
+
+```{r}
+Optimum_price_bad = (-0.05522 * 55 - 11.832984) / (2 * -0.05522)
+Optimum_price_bad
+```
+
+
+```{r}
+optimised_results_bad.function <- function() {
+   for(cost in 40:80) {
+     optimised_results_bad<- (-0.05522 *cost - 11.832984)/(2 * -0.05522)
+      print(optimised_results_bad)
+   }
+
+}	
+
+```
+
+
+```{r}
+#optimised_results_bad.function()
+price1<- c(40:79)
+optimize_bad<-c(127.144, 127.64, 128.144, 128.644, 129.144, 129.644, 130.144, 130.644, 131.144, 131.644, 132.144, 132.644, 133.144, 133.644, 134.144, 134.644, 135.144, 135.644, 136.144, 136.644, 137.144, 137.64, 138.144, 138.644, 139.144, 139.644, 140.144, 140.644, 141.144, 141.644, 142.144, 142.644, 143.144, 143.644, 144.144, 144.644, 145.144, 145.644, 146.144, 146.644)
+
+optimized_prie_bad<-cbind.data.frame(optimize_bad,price1)
+names(optimized_prie_bad)<-c('Optimized Price','Change in Cost')
+head(optimized_prie_bad)
+```
+
+
+
+```{r}
+a<-ggplot(optimized_prie_good, aes(optimized_prie_good$`Optimized Price`, optimized_prie_good$`Change in Cost`, colour='Good Price')  ) + labs(title = 'Optimized Price VS Cost Price',x='Optimized price',y='Cost Price') + geom_line() +  scale_color_manual("", values = ("Good Price'" = "green")) +geom_point(colour='black')
+
+b<-ggplot(optimized_prie_bad, aes(optimized_prie_bad$`Optimized Price`, optimized_prie_bad$`Change in Cost`, colour='bad Price')  ) + labs(x='Optimized price',y='Cost Price') + geom_line() +  scale_color_manual("", values = ("bad Price'" = "red")) +geom_point(colour='black')
+grid.arrange(a, b, ncol=1)
+
+
+```
+ # Here we can see that, the optimized price for good and bad location differes with different cost price.
+ # Other notable fact is  the pricing for bad positin= 125 <= optimized price <= 150 
+                                          good postion = 150 <= optimized price <=175
+                                          cost price = 40<=cost price <=80
+
